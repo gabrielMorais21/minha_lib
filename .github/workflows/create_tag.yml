@@ -1,0 +1,24 @@
+name: Criar Tag ao dar merge com a Master
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  create-tag:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Verificar código com checkout
+        uses: actions/checkout@v2
+
+      - name: Obter a versão do pubspec.yaml
+        id: get_version
+        run: echo "::set-output name=version::$(grep 'version:' pubspec.yaml | awk '{print $2}')"
+
+      - name: Criar a Tag
+        run: git tag ${{ steps.get_version.outputs.version }}
+
+      - name: Enviar a Tag para o repositório remoto
+        run: git push origin ${{ steps.get_version.outputs.version }}
